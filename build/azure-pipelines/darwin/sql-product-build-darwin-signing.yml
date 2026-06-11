@@ -1,0 +1,38 @@
+steps:
+  - task: InstallAppleCertificate@2
+    displayName: 'Install developer certificate'
+    inputs:
+      certSecureFile: 'osx_signing_key.p12'
+    condition: eq(variables['signed'], true)
+
+  - task: DownloadBuildArtifacts@0
+    displayName: 'Download Build Artifacts'
+    inputs:
+      downloadType: specific
+      itemPattern: 'drop/darwin/archive/azuredatastudio-darwin-$(VSCODE_ARCH)-unsigned.zip'
+      downloadPath: '$(Build.SourcesDirectory)/.build/'
+
+  - script: |
+      pushd $(Build.SourcesDirectory)/.build/drop/darwin/archive
+      mv azuredatastudio-darwin-$(VSCODE_ARCH)-unsigned.zip azuredatastudio-darwin-$(VSCODE_ARCH).zip
+    displayName: 'Rename the file'
+
+  - script: |
+      zip -d $(Build.SourcesDirectory)/.build/drop/darwin/archive/azuredatastudio-darwin-$(VSCODE_ARCH).zip "*.pkg"
+    displayName: Clean Archive
+    condition: and(succeeded(), eq(variables['signed'], true))
+
+  - task: CopyFiles@2
+    displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)/darwin/archive'
+    inputs:
+      SourceFolder: '$(Build.SourcesDirectory)/.build/drop/darwin/archive'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)/darwin/archive'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact: drop'
+    condition: always()
+
+  - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+    displayName: 'Component Detection'
+    inputs:
+      failOnAlert: true

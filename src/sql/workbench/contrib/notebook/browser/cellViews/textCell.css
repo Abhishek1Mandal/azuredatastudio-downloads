@@ -1,0 +1,82 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+text-cell-component {
+	display: block;
+}
+text-cell-component .notebook-text {
+	display: inline-block;
+	outline: none;
+	min-height: 50px;
+}
+text-cell-component .notebook-text.show-preview.show-markdown{
+	display: flex;
+}
+text-cell-component code-component {
+	flex-direction: column;
+}
+text-cell-component .notebook-preview {
+	flex-direction: column;
+	padding-left: 8px;
+	padding-right: 8px;
+	user-select: none;
+	outline: none;
+	padding-top: 14px;
+}
+text-cell-component .notebook-preview > *:first-child {
+	margin-top: 0;
+	padding-top: 0;
+}
+text-cell-component .show-markdown.show-preview code-component {
+	width: 50%
+}
+text-cell-component .show-markdown .notebook-preview {
+	border-color: transparent;
+	border-left-width: 1px;
+	border-style: solid;
+	border-top-width: 0;
+	width: 50%;
+}
+.notebook-preview.actionselect {
+	user-select: text;
+}
+text-cell-component .monaco-editor .margin,
+text-cell-component code-component .monaco-editor,
+text-cell-component code-component .monaco-editor-background,
+text-cell-component code-component .monaco-editor .inputarea.ime-input {
+	background-color: transparent;
+}
+
+
+text-cell-component table {
+	border-collapse: collapse;
+	border-spacing: 0;
+	border: none;
+	font-size: 12px;
+	table-layout: auto;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 1em;
+	display: table-row;
+}
+
+text-cell-component thead {
+	vertical-align: bottom;
+}
+
+text-cell-component td,
+text-cell-component th,
+text-cell-component tr {
+	vertical-align: middle;
+	padding: 0.5em 0.5em;
+	line-height: normal;
+	white-space: normal;
+	max-width: none;
+	border: none;
+}
+
+text-cell-component th {
+	font-weight: bold;
+}

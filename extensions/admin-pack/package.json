@@ -1,0 +1,36 @@
+{
+	"name": "admin-pack",
+	"displayName": "Admin Pack for SQL Server",
+	"description": "",
+	"version": "0.1.0",
+  "publisher": "Microsoft",
+  "icon": "images/extension.png",
+	"engines": {
+		"vscode": "*",
+		"azdata": "*"
+	},
+	"capabilities": {
+		"virtualWorkspaces": false,
+		"untrustedWorkspaces": {
+			"supported": true
+		}
+	},
+	"extensionPack": [
+		"Microsoft.agent",
+		"Microsoft.profiler",
+		"Microsoft.import",
+		"Microsoft.dacpac"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Microsoft/azuredatastudio.git"
+	},
+	"bugs": {
+		"url": "https://github.com/Microsoft/azuredatastudio/issues"
+	},
+	"__metadata": {
+		"id": "32",
+		"publisherDisplayName": "Microsoft",
+		"publisherId": "Microsoft"
+	}
+}

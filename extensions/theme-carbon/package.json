@@ -1,0 +1,29 @@
+{
+    "name": "theme-carbon",
+    "displayName": "Azure Data Studio Themes",
+    "description": "The light and dark themes for Azure Data Studio",
+    "version": "0.1.0",
+    "publisher": "sql",
+    "engines": {
+        "vscode": "*"
+    },
+    "categories": [
+        "Themes"
+    ],
+    "contributes": {
+        "themes": [
+            {
+                "id": "Default Light Azure Data Studio",
+                "label": "Light Azure Data Studio (default light)",
+                "uiTheme": "vs",
+                "path": "./themes/light_carbon.json"
+            },
+            {
+                "id": "Default Dark Azure Data Studio",
+                "label": "Dark Azure Data Studio (default dark)",
+                "uiTheme": "vs-dark",
+                "path": "./themes/dark_carbon.json"
+            }
+        ]
+    }
+}

@@ -1,0 +1,31 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.error-dialog {
+	padding: 10px;
+	height: calc(100% - 20px);
+}
+
+.error-dialog .codicon.error, .error-dialog .codicon.warning , .error-dialog .codicon.info {
+	width: 20px;
+	height: 20px;
+	float: left;
+	margin-right: 10px;
+}
+
+/* Make the test selectable*/
+.error-dialog .error-message {
+	-webkit-user-select: text;
+	user-select: text;
+}
+
+.error-dialog .error-instruction-text{
+	margin-top: 40px;
+	font-weight: 700;
+}
+
+.modal .footer-button a.monaco-button.monaco-text-button.codicon.scriptToClipboard {
+	width: 120px;
+}

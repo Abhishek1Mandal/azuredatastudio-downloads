@@ -1,0 +1,10 @@
+- title: Welcome
+  url: /readme
+  not_numbered: true
+  sections:
+  - title: Postgres
+    url: /postgres/readme
+    not_numbered: true
+    sections:
+    - title: TSG100 - The Azure Arc-enabled PostgreSQL server troubleshooter
+      url: postgres/tsg100-troubleshoot-postgres

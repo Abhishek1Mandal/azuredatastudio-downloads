@@ -1,0 +1,128 @@
+<!-- Copyright (C) Microsoft Corporation. All rights reserved. -->
+<!DOCTYPE html>
+<html>
+	<head>
+		<script>
+			performance.mark('code/didStartRenderer');
+		</script>
+		<meta charset="utf-8" />
+
+		<!-- Mobile tweaks -->
+		<meta name="mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-title" content="Code">
+		<link rel="apple-touch-icon" href="{{WORKBENCH_WEB_BASE_URL}}/resources/server/code-192.png" />
+
+		<!-- Disable pinch zooming -->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+
+		<!-- Workbench Configuration -->
+		<meta id="vscode-workbench-web-configuration" data-settings="{{WORKBENCH_WEB_CONFIGURATION}}">
+
+		<!-- Workbench Auth Session -->
+		<meta id="vscode-workbench-auth-session" data-settings="{{WORKBENCH_AUTH_SESSION}}">
+
+		<!-- Builtin Extensions (running out of sources) -->
+		<meta id="vscode-workbench-builtin-extensions" data-settings="{{WORKBENCH_BUILTIN_EXTENSIONS}}">
+		<!-- Workbench Icon/Manifest/CSS -->
+		<link rel="icon" href="{{WORKBENCH_WEB_BASE_URL}}/resources/server/favicon.ico" type="image/x-icon" />
+		<link rel="manifest" href="{{WORKBENCH_WEB_BASE_URL}}/resources/server/manifest.json" crossorigin="use-credentials" />
+
+	</head>
+
+	<body aria-label="">
+	</body>
+
+	<!-- Startup (do not modify order of script tags!) -->
+	<script src="{{WORKBENCH_WEB_BASE_URL}}/out/vs/loader.js"></script>
+	<script src="{{WORKBENCH_WEB_BASE_URL}}/out/vs/webPackagePaths.js"></script>
+	<script>
+		const baseUrl = new URL('{{WORKBENCH_WEB_BASE_URL}}', window.location.origin).toString();
+		Object.keys(self.webPackagePaths).map(function (key, index) {
+			self.webPackagePaths[key] = `${baseUrl}/remote/web/node_modules/${key}/${self.webPackagePaths[key]}`;
+		});
+		require.config({
+			baseUrl: `${baseUrl}/out`,
+			recordStats: true,
+			trustedTypesPolicy: window.trustedTypes?.createPolicy('amdLoader', {
+				createScriptURL(value) {
+					if(value.startsWith(window.location.origin)) {
+						return value;
+					}
+					throw new Error(`Invalid script url: ${value}`)
+				}
+			}),
+			paths: {
+				'vscode-textmate': `${window.location.origin}/static/remote/web/node_modules/vscode-textmate/release/main`,
+				'vscode-oniguruma': `${window.location.origin}/static/remote/web/node_modules/vscode-oniguruma/release/main`,
+				'xterm': `${window.location.origin}/static/remote/web/node_modules/xterm/lib/xterm.js`,
+				'xterm-addon-search': `${window.location.origin}/static/remote/web/node_modules/xterm-addon-search/lib/xterm-addon-search.js`,
+				'xterm-addon-unicode11': `${window.location.origin}/static/remote/web/node_modules/xterm-addon-unicode11/lib/xterm-addon-unicode11.js`,
+				'xterm-addon-webgl': `${window.location.origin}/static/remote/web/node_modules/xterm-addon-webgl/lib/xterm-addon-webgl.js`,
+				'@angular/core': `${window.location.origin}/static/remote/web/node_modules/@angular/core/bundles/core.umd.js`,
+				'@angular/common': `${window.location.origin}/static/remote/web/node_modules/@angular/common/bundles/common.umd.js`,
+				'@angular/compiler': `${window.location.origin}/static/remote/web/node_modules/@angular/compiler/bundles/compiler.umd.js`,
+				'@angular/platform-browser': `${window.location.origin}/static/remote/web/node_modules/@angular/platform-browser/bundles/platform-browser.umd.js`,
+				'@angular/platform-browser-dynamic': `${window.location.origin}/static/remote/web/node_modules/@angular/platform-browser-dynamic/bundles/platform-browser-dynamic.umd.js`,
+				'@angular/platform-browser/animations': `${window.location.origin}/static/remote/web/node_modules/@angular/platform-browser/bundles/platform-browser-animations.umd.js`,
+				'@angular/forms': `${window.location.origin}/static/remote/web/node_modules/@angular/forms/bundles/forms.umd.js`,
+				'@angular/http': `${window.location.origin}/static/remote/web/node_modules/@angular/http/bundles/http.umd.js`,
+				'@angular/router': `${window.location.origin}/static/remote/web/node_modules/@angular/router/bundles/router.umd.js`,
+				'@angular/animations': `${window.location.origin}/static/remote/web/node_modules/@angular/animations/bundles/animations.umd.n.js`,
+				'angular2-grid': `${window.location.origin}/static/remote/web/node_modules/angular2-grid/bundles/NgGrid.umd.js`,
+				'angular2-slickgrid': `${window.location.origin}/static/remote/web/node_modules/angular2-slickgrid/out/bundles/angular2-slickgrid.umd.js`,
+				'chart.js':  `${window.location.origin}/static/remote/web/node_modules/chart.js/dist/chart.umd.js`,
+				'html-to-image': `${window.location.origin}/static/remote/web/node_modules/html-to-image/dist/html-to-image.js`,
+				'rxjs/Observable': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?0`,
+				'rxjs/observable/merge': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?1`,
+				'rxjs/operator/share': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?2`,
+				'rxjs/Subject': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?3`,
+				'rxjs/observable/forkJoin': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?4`,
+				'rxjs/operator/map': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?5`,
+				'rxjs/observable/fromPromise': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?6`,
+				'rxjs/add/observable/fromPromise': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?7`,
+				'rxjs/BehaviorSubject': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?8`,
+				'rxjs/observable/from': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?9`,
+				'rxjs/operator/concatMap': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?10`,
+				'rxjs/observable/of': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?11`,
+				'rxjs/operator/every': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?12`,
+				'rxjs/operator/first': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?13`,
+				'rxjs/operator/mergeMap': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?14`,
+				'rxjs/operator/reduce': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?15`,
+				'rxjs/operator/catch': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?16`,
+				'rxjs/operator/concatAll': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?17`,
+				'rxjs/util/EmptyError': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?18`,
+				'rxjs/operator/last': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?19`,
+				'rxjs/operator/mergeAll': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?20`,
+				'rxjs/operator/filter': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?21`,
+				'sanitize-html': `${window.location.origin}/static/remote/web/node_modules/sanitize-html/dist/sanitize-html.js`,
+				'ansi_up': `${window.location.origin}/static/remote/web/node_modules/ansi_up/ansi_up.js`,
+				'tas-client-umd': `${window.location.origin}/static/remote/web/node_modules/tas-client-umd/lib/tas-client-umd.js`,
+				'iconv-lite-umd': `${window.location.origin}/static/remote/web/node_modules/iconv-lite-umd/lib/iconv-lite-umd.js`,
+				'jschardet': `${window.location.origin}/static/remote/web/node_modules/jschardet/dist/jschardet.min.js`,
+				'turndown': `${window.location.origin}/static/remote/web/node_modules/turndown/lib/turndown.browser.umd.js`,
+				'mark.js': `${window.location.origin}/static/remote/web/node_modules/mark.js/dist/mark.min.js`,
+				'gridstack': `${window.location.origin}/static/node_modules/gridstack/dist/gridstack-h5.js`,
+				'plotly.js-dist-min': `${window.location.origin}/static/node_modules/plotly.js-dist-min/plotly.min.js`,
+				'azdataGraph': `${window.location.origin}/static/node_modules/azdataGraph/dist/build.js`
+			}
+		});
+	</script>
+	<script src="./static/remote/web/node_modules/jquery/dist/jquery.min.js"></script>
+	<script src="./static/remote/web/node_modules/slickgrid/lib/jquery.event.drag-2.3.0.js"></script>
+	<script src="./static/remote/web/node_modules/slickgrid/lib/jquery-ui-1.9.2.js"></script>
+	<script src="./static/remote/web/node_modules/slickgrid/slick.core.js"></script>
+	<script src="./static/remote/web/node_modules/slickgrid/slick.grid.js"></script>
+	<script src="./static/remote/web/node_modules/slickgrid/slick.dataview.js"></script>
+	<script src="./static/remote/web/node_modules/slickgrid/plugins/slick.cellrangedecorator.js"></script>
+	<script src="./static/remote/web/node_modules/zone.js/dist/zone.min.js"></script>
+	<script src="./static/remote/web/node_modules/reflect-metadata/Reflect.js"></script>
+	<script src="./static/out/vs/base/common/performance.js"></script>
+	<script src="./static/out/vs/loader.js"></script>
+	<script>
+		performance.mark('code/willLoadWorkbenchMain');
+	</script>
+	<script>
+		require(['vs/code/browser/workbench/workbench'], function() {});
+	</script>
+</html>

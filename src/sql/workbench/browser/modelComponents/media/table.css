@@ -1,0 +1,31 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.center-align
+{
+	text-align: center;
+}
+
+.align-with-header
+{
+	padding-left:3px !important;
+}
+
+.no-borders
+{
+	border: none !important
+}
+
+.display-none {
+	display: none;
+}
+
+modelview-table .context-menu-button {
+	border-width: 0px;
+	height: 16px;
+	width: 26px;
+	vertical-align: middle;
+	cursor: pointer;
+}

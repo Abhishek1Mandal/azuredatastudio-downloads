@@ -1,0 +1,18 @@
+{
+	"extends": "../tsconfig.base.json",
+	"compilerOptions": {
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+		"outDir": "out",
+		"lib": [
+			"es2015"
+		],
+		"strict": false,
+		"noUnusedParameters": false,
+		"noImplicitAny": false,
+		"strictNullChecks": false
+	},
+	"include": [
+		"src/**/*"
+	]
+}

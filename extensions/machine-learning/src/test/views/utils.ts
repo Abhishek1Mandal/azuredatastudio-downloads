@@ -1,0 +1,382 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+import * as azdata from 'azdata';
+import * as vscode from 'vscode';
+import * as TypeMoq from 'typemoq';
+import { ApiWrapper } from '../../common/apiWrapper';
+
+export interface ViewTestContext {
+	apiWrapper: TypeMoq.IMock<ApiWrapper>;
+	view: azdata.ModelView;
+	onClick: vscode.EventEmitter<any>;
+}
+
+export function createViewContext(): ViewTestContext {
+	let onClick: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
+	let onChange: vscode.EventEmitter<boolean> = new vscode.EventEmitter<boolean>();
+
+	let apiWrapper = TypeMoq.Mock.ofType(ApiWrapper);
+	let componentBase: azdata.Component = {
+		id: '',
+		updateProperties: () => Promise.resolve(),
+		updateProperty: () => Promise.resolve(),
+		updateCssStyles: undefined!,
+		onValidityChanged: undefined!,
+		valid: true,
+		validate: undefined!,
+		focus: undefined!,
+		dispose() { }
+	};
+	let button: azdata.ButtonComponent = Object.assign({}, componentBase, {
+		onDidClick: onClick.event
+	});
+	let link: azdata.HyperlinkComponent = Object.assign({}, componentBase, {
+		onDidClick: onClick.event,
+		label: '',
+		url: ''
+	});
+	let radioButton: azdata.RadioButtonComponent = Object.assign({}, componentBase, {
+		checked: true,
+		onDidClick: onClick.event,
+		onDidChangeCheckedState: onChange.event,
+	});
+	let checkbox: azdata.CheckBoxComponent = Object.assign({}, componentBase, {
+		checked: true,
+		onChanged: onClick.event
+	});
+	let container = {
+		clearItems: () => { },
+		addItems: () => { },
+		addItem: () => { },
+		removeItem: () => true,
+		insertItem: () => { },
+		items: [],
+		setLayout: () => { },
+		setItemLayout: () => { }
+	};
+	let form: azdata.FormContainer = Object.assign({}, componentBase, container, {
+	});
+	let flex: azdata.FlexContainer = Object.assign({}, componentBase, container, {
+	});
+	let div: azdata.DivContainer = Object.assign({}, componentBase, container, {
+		onDidClick: onClick.event
+	});
+
+	let buttonBuilder: azdata.ComponentBuilder<azdata.ButtonComponent, azdata.ButtonProperties> = {
+		component: () => button,
+		withProperties: () => buttonBuilder,
+		withValidation: () => buttonBuilder,
+		withProps: () => buttonBuilder
+	};
+	let hyperLinkBuilder: azdata.ComponentBuilder<azdata.HyperlinkComponent, azdata.HyperlinkComponentProperties> = {
+		component: () => link,
+		withProperties: () => hyperLinkBuilder,
+		withValidation: () => hyperLinkBuilder,
+		withProps: () => hyperLinkBuilder
+	};
+	let radioButtonBuilder: azdata.ComponentBuilder<azdata.RadioButtonComponent, azdata.RadioButtonProperties> = {
+		component: () => radioButton,
+		withProperties: () => radioButtonBuilder,
+		withProps: () => radioButtonBuilder,
+		withValidation: () => radioButtonBuilder
+	};
+	let checkBoxBuilder: azdata.ComponentBuilder<azdata.CheckBoxComponent, azdata.CheckBoxProperties> = {
+		component: () => checkbox,
+		withProperties: () => checkBoxBuilder,
+		withProps: () => checkBoxBuilder,
+		withValidation: () => checkBoxBuilder
+	};
+	let inputBox: () => azdata.InputBoxComponent = () => Object.assign(<azdata.InputBoxComponent>Object.assign({}, componentBase), {
+		onTextChanged: onClick.event!,
+		onEnterKeyPressed: undefined!,
+		value: ''
+	});
+	let image: () => azdata.ImageComponent = () => Object.assign({}, componentBase, {
+
+	});
+	let dropdown: () => azdata.DropDownComponent = () => Object.assign({}, componentBase, {
+		onValueChanged: onClick.event,
+		value: {
+			name: '',
+			displayName: ''
+		},
+		values: []
+	});
+	let declarativeTable: () => azdata.DeclarativeTableComponent = () => Object.assign({}, componentBase, {
+		onDataChanged: undefined!,
+		onRowSelected: undefined!,
+		setFilter: undefined!,
+		data: [],
+		columns: [],
+		setDataValues: undefined!
+	});
+
+	let loadingComponent: () => azdata.LoadingComponent = () => Object.assign({}, componentBase, {
+		loading: false,
+		component: undefined!
+	});
+
+	let card: () => azdata.CardComponent = () => Object.assign({}, componentBase, {
+		label: '',
+		onDidActionClick: new vscode.EventEmitter<azdata.ActionDescriptor>().event,
+		onCardSelectedChanged: onClick.event
+	});
+
+	let group: () => azdata.GroupContainer = () => Object.assign({}, componentBase, container, {
+		collapsed: false,
+	});
+
+	let declarativeTableBuilder: azdata.ComponentBuilder<azdata.DeclarativeTableComponent, azdata.DeclarativeTableProperties> = {
+		component: () => declarativeTable(),
+		withProperties: () => declarativeTableBuilder,
+		withValidation: () => declarativeTableBuilder,
+		withProps: () => declarativeTableBuilder
+	};
+
+	let loadingBuilder: azdata.LoadingComponentBuilder = {
+		component: () => loadingComponent(),
+		withProperties: () => loadingBuilder,
+		withValidation: () => loadingBuilder,
+		withItem: () => loadingBuilder,
+		withProps: () => loadingBuilder
+	};
+
+	let formBuilder: azdata.FormBuilder = Object.assign({}, {
+		component: () => form,
+		addFormItem: () => { },
+		insertFormItem: () => { },
+		removeFormItem: () => true,
+		addFormItems: () => { },
+		withFormItems: () => formBuilder,
+		withProperties: () => formBuilder,
+		withValidation: () => formBuilder,
+		withItems: () => formBuilder,
+		withLayout: () => formBuilder,
+		withProps: () => formBuilder
+	});
+
+	let flexBuilder: azdata.FlexBuilder = Object.assign({}, {
+		component: () => flex,
+		withProperties: () => flexBuilder,
+		withValidation: () => flexBuilder,
+		withItems: () => flexBuilder,
+		withLayout: () => flexBuilder,
+		withProps: () => flexBuilder
+	});
+	let divBuilder: azdata.DivBuilder = Object.assign({}, {
+		component: () => div,
+		withProperties: () => divBuilder,
+		withValidation: () => divBuilder,
+		withItems: () => divBuilder,
+		withLayout: () => divBuilder,
+		withProps: () => divBuilder
+	});
+
+	let inputBoxBuilder: azdata.ComponentBuilder<azdata.InputBoxComponent, azdata.InputBoxProperties> = {
+		component: () => {
+			let r = inputBox();
+			return r;
+		},
+		withProperties: () => inputBoxBuilder,
+		withValidation: () => inputBoxBuilder,
+		withProps: () => inputBoxBuilder
+	};
+	let cardBuilder: azdata.ComponentBuilder<azdata.CardComponent, azdata.CardProperties> = {
+		component: () => {
+			let r = card();
+			return r;
+		},
+		withProperties: () => cardBuilder,
+		withValidation: () => cardBuilder,
+		withProps: () => cardBuilder
+	};
+	let groupBuilder: azdata.GroupBuilder = {
+		component: () => {
+			return group();
+		},
+		withProperties: () => groupBuilder,
+		withProps: () => groupBuilder,
+		withValidation: () => groupBuilder,
+		withItems: () => groupBuilder,
+		withLayout: () => groupBuilder
+	};
+
+	let imageBuilder: azdata.ComponentBuilder<azdata.ImageComponent, azdata.ImageComponentProperties> = {
+		component: () => {
+			let r = image();
+			return r;
+		},
+		withProperties: () => imageBuilder,
+		withProps: () => imageBuilder,
+		withValidation: () => imageBuilder
+	};
+	let dropdownBuilder: azdata.ComponentBuilder<azdata.DropDownComponent, azdata.DropDownProperties> = {
+		component: () => {
+			let r = dropdown();
+			return r;
+		},
+		withProperties: () => dropdownBuilder,
+		withProps: () => dropdownBuilder,
+		withValidation: () => dropdownBuilder
+	};
+
+	let view: azdata.ModelView = {
+		onClosed: undefined!,
+		connection: undefined!,
+		serverInfo: undefined!,
+		valid: true,
+		onValidityChanged: undefined!,
+		validate: undefined!,
+		initializeModel: () => { return Promise.resolve(); },
+		modelBuilder: {
+			listView: undefined!,
+			radioCardGroup: undefined!,
+			chart: undefined!,
+			navContainer: undefined!,
+			divContainer: () => divBuilder,
+			flexContainer: () => flexBuilder,
+			splitViewContainer: undefined!,
+			card: () => cardBuilder,
+			inputBox: () => inputBoxBuilder,
+			checkBox: () => checkBoxBuilder!,
+			radioButton: () => radioButtonBuilder,
+			webView: undefined!,
+			editor: undefined!,
+			diffeditor: undefined!,
+			text: () => inputBoxBuilder,
+			image: () => imageBuilder,
+			button: () => buttonBuilder,
+			dropDown: () => dropdownBuilder,
+			tree: undefined!,
+			listBox: undefined!,
+			table: undefined!,
+			declarativeTable: () => declarativeTableBuilder,
+			dashboardWidget: undefined!,
+			dashboardWebview: undefined!,
+			formContainer: () => formBuilder,
+			groupContainer: () => groupBuilder,
+			toolbarContainer: undefined!,
+			loadingComponent: () => loadingBuilder,
+			fileBrowserTree: undefined!,
+			hyperlink: () => hyperLinkBuilder,
+			tabbedPanel: undefined!,
+			separator: undefined!,
+			propertiesContainer: undefined!,
+			infoBox: undefined!,
+			slider: undefined!,
+			executionPlan: undefined!,
+		},
+		dispose() { }
+	};
+	let tab: azdata.window.DialogTab = {
+		title: '',
+		content: '',
+		registerContent: async (handler) => {
+			try {
+				await handler(view);
+			} catch (err) {
+				console.log(err);
+			}
+		},
+		onValidityChanged: undefined!,
+		valid: true,
+		modelView: undefined!,
+		dispose() { }
+	};
+
+	let dialogButton: azdata.window.Button = {
+		label: '',
+		enabled: true,
+		hidden: false,
+		onClick: onClick.event,
+
+	};
+	let dialogMessage: azdata.window.DialogMessage = {
+		text: '',
+	};
+	let dialog: azdata.window.Dialog = {
+		title: '',
+		isWide: false,
+		content: [],
+		okButton: dialogButton,
+		cancelButton: dialogButton,
+		customButtons: [],
+		message: dialogMessage,
+		registerCloseValidator: () => { },
+		registerOperation: () => { },
+		onValidityChanged: new vscode.EventEmitter<boolean>().event,
+		onClosed: new vscode.EventEmitter<azdata.window.CloseReason>().event,
+		registerContent: () => { },
+		modelView: undefined!,
+		valid: true,
+		loading: false,
+		loadingText: '',
+		loadingCompletedText: '',
+		dispose() { }
+	};
+	let wizard: azdata.window.Wizard = {
+		title: '',
+		pages: [],
+		currentPage: 0,
+		doneButton: dialogButton,
+		cancelButton: dialogButton,
+		generateScriptButton: dialogButton,
+		nextButton: dialogButton,
+		backButton: dialogButton,
+		customButtons: [],
+		displayPageTitles: true,
+		onPageChanged: onClick.event,
+		addPage: () => { return Promise.resolve(); },
+		removePage: () => { return Promise.resolve(); },
+		setCurrentPage: () => { return Promise.resolve(); },
+		open: () => { return Promise.resolve(); },
+		close: () => { return Promise.resolve(); },
+		registerNavigationValidator: () => { },
+		message: dialogMessage,
+		registerOperation: () => { },
+		loading: false,
+		loadingText: '',
+		loadingCompletedText: ''
+	};
+	let wizardPage: azdata.window.WizardPage = {
+		title: '',
+		content: '',
+		customButtons: [],
+		enabled: true,
+		description: '',
+		onValidityChanged: onClick.event,
+		registerContent: async (handler) => {
+			try {
+				await handler(view);
+			} catch (err) {
+				console.log(err);
+			}
+		},
+		modelView: undefined!,
+		valid: true,
+		dispose() { }
+	};
+	apiWrapper.setup(x => x.createButton(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => dialogButton);
+	apiWrapper.setup(x => x.createTab(TypeMoq.It.isAny())).returns(() => tab);
+	apiWrapper.setup(x => x.createWizard(TypeMoq.It.isAny())).returns(() => wizard);
+	apiWrapper.setup(x => x.createWizardPage(TypeMoq.It.isAny())).returns(() => wizardPage);
+	apiWrapper.setup(x => x.createModelViewDialog(TypeMoq.It.isAny())).returns(() => dialog);
+	apiWrapper.setup(x => x.openDialog(TypeMoq.It.isAny())).returns(() => { });
+	apiWrapper.setup(x => x.registerWidget(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(async (id, handler) => {
+		if (id) {
+			return await handler(view);
+		} else {
+			Promise.reject();
+		}
+	});
+
+	return {
+		apiWrapper: apiWrapper,
+		view: view,
+		onClick: onClick,
+	};
+}
+

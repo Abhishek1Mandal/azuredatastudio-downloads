@@ -1,0 +1,78 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+import { ExtHostModelViewTreeViewsShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
+import { IModelViewTreeViewDataProvider, ITreeComponentItem } from 'sql/workbench/common/views';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+import * as vsTreeView from 'vs/workbench/api/browser/mainThreadTreeViews';
+import { ResolvableTreeItem } from 'vs/workbench/common/views';
+import { deepClone } from 'vs/base/common/objects';
+import { IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
+import { SqlExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
+
+export class ResolvableTreeComponentItem extends ResolvableTreeItem implements ITreeComponentItem {
+
+	checked?: boolean;
+	enabled?: boolean;
+	onCheckedChanged?: (checked: boolean) => void;
+	override children?: ITreeComponentItem[];
+
+	constructor(treeItem: ITreeComponentItem, resolve?: (() => Promise<ITreeComponentItem | undefined>)) {
+		super(treeItem, resolve);
+		this.checked = treeItem.checked;
+		this.enabled = treeItem.enabled;
+		this.onCheckedChanged = treeItem.onCheckedChanged;
+		this.children = deepClone(treeItem.children);
+	}
+
+	override asTreeItem(): ITreeComponentItem {
+		const item = super.asTreeItem() as ITreeComponentItem;
+		item.checked = this.checked;
+		item.enabled = this.enabled;
+		return item;
+	}
+}
+
+export class TreeViewDataProvider extends vsTreeView.TreeViewDataProvider implements IModelViewTreeViewDataProvider {
+	constructor(handle: number, treeViewId: string,
+		context: IExtHostContext,
+		notificationService: INotificationService
+	) {
+		super(`${handle}-${treeViewId}`, context.getProxy(SqlExtHostContext.ExtHostModelViewTreeViews), notificationService);
+	}
+
+	onNodeCheckedChanged(treeItemHandle?: string, checked?: boolean) {
+		(<ExtHostModelViewTreeViewsShape>this._proxy).$onNodeCheckedChanged(this.treeViewId, treeItemHandle, checked);
+	}
+
+	onNodeSelected(items: ITreeComponentItem[]) {
+		if (items) {
+			(<ExtHostModelViewTreeViewsShape>this._proxy).$onNodeSelected(this.treeViewId, items.map(i => i.handle));
+		}
+	}
+
+	refresh(itemsToRefreshByHandle: { [treeItemHandle: string]: ITreeComponentItem }) {
+	}
+
+	/**
+	 * Returns the set of mapped ResolvableTreeComponentItems
+	 * @override
+	 * @param elements The elements to map
+	 */
+	protected override async postGetChildren(elements: ResolvableTreeItem[] | undefined): Promise<ResolvableTreeComponentItem[]> {
+		const result: ResolvableTreeComponentItem[] = [];
+		const hasResolve = await this.hasResolve;
+		if (elements) {
+			for (const element of elements) {
+				const resolvable = new ResolvableTreeComponentItem(element, hasResolve ? () => {
+					return this._proxy.$resolve(this.treeViewId, element.handle, undefined);
+				} : undefined);
+				this.itemsMap.set(element.handle, resolvable);
+				result.push(resolvable);
+			}
+		}
+		return result;
+	}
+}

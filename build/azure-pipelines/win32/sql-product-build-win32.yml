@@ -1,0 +1,212 @@
+steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: "20.17.0"
+
+  - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3
+    inputs:
+      versionSpec: "1.x"
+
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.11'
+      addToPath: true
+
+  - task: DownloadPipelineArtifact@2
+    inputs:
+      artifact: Compilation
+    displayName: Download compilation output
+
+  - powershell: |
+      . build/azure-pipelines/win32/exec.ps1
+      $ErrorActionPreference = "Stop"
+      exec { tar -xf $(Pipeline.Workspace)/compilation.tar.gz }
+      # Delete compiled tarball now that we've extracted the files since it takes up a lot of space
+      exec { rm $(Pipeline.Workspace)/compilation.tar.gz }
+    displayName: Extract compilation output
+
+  - powershell: |
+      . build/azure-pipelines/win32/exec.ps1
+      $ErrorActionPreference = "Stop"
+      "machine github.com`nlogin azuredatastudio`npassword $(Github-Mixin-Password)" | Out-File "$env:USERPROFILE\_netrc" -Encoding ASCII
+
+      exec { git config user.email "sqltools@service.microsoft.com" }
+      exec { git config user.name "AzureDataStudio" }
+      exec { git config --global http.postBuffer 524288000 }
+      exec { git config --global https.postBuffer 524288000 }
+    displayName: Prepare tooling
+
+  - task: CodeQL3000Init@0
+    displayName: CodeQL Initialize
+    condition: eq(variables['Codeql.enabled'], 'True')
+
+  - powershell: |
+      git remote add distro "https://github.com/$(VSCODE_MIXIN_REPO).git"
+      git fetch distro
+      git merge $(node -p "require('./package.json').distro")
+    displayName: Merge distro
+
+  - powershell: |
+      . build/azure-pipelines/win32/exec.ps1
+      $ErrorActionPreference = "Stop"
+      exec { node build/azure-pipelines/common/sql-computeNodeModulesCacheKey.js $(VSCODE_ARCH) > .build/yarnlockhash }
+    displayName: Prepare yarn cache key
+
+  - task: Cache@2
+    inputs:
+      key: 'nodeModules | $(Agent.OS) | .build/yarnlockhash'
+      path: .build/node_modules_cache
+      cacheHitVar: NODE_MODULES_RESTORED
+    displayName: Restore Cache - Node Modules
+    continueOnError: true
+
+  - powershell: |
+      . build/azure-pipelines/win32/exec.ps1
+      $ErrorActionPreference = "Stop"
+      exec { 7z.exe x .build/node_modules_cache/cache.7z -aos }
+    condition: and(succeeded(), eq(variables.NODE_MODULES_RESTORED, 'true'))
+    displayName: Extract node_modules archive
+
+  - powershell: |
+      . build/azure-pipelines/win32/exec.ps1
+      $ErrorActionPreference = "Stop"
+      $env:npm_config_arch="$(VSCODE_ARCH)"
+      $env:CHILD_CONCURRENCY="1"
+      exec { yarn --frozen-lockfile }
+    env:
+      GITHUB_TOKEN: $(Github-Mixin-Password)
+    condition: and(succeeded(), ne(variables.NODE_MODULES_RESTORED, 'true'))
+    displayName: Install dependencies
+
+  - powershell: |
+      . build/azure-pipelines/win32/exec.ps1
+      $ErrorActionPreference = "Stop"
+      exec { node build/azure-pipelines/common/listNodeModules.js .build/node_modules_list.txt }
+      exec { mkdir -Force .build/node_modules_cache }
+      exec { 7z.exe a .build/node_modules_cache/cache.7z -mx3 `@.build/node_modules_list.txt }
+    condition: and(succeeded(), ne(variables.NODE_MODULES_RESTORED, 'true'))
+    displayName: Create node_modules archive
+
+  - powershell: |
+      . build/azure-pipelines/win32/exec.ps1
+      $ErrorActionPreference = "Stop"
+      exec { yarn postinstall }
+    displayName: Run postinstall scripts
+    condition: and(succeeded(), eq(variables.NODE_MODULES_RESTORED, 'true'))
+
+  - powershell: |
+      . build/azure-pipelines/win32/exec.ps1
+      $ErrorActionPreference = "Stop"
+      exec { node build/azure-pipelines/sql-mixin }
+    displayName: Mix in quality
+
+  - powershell: |
+      . build/azure-pipelines/win32/exec.ps1
+      $ErrorActionPreference = "Stop"
+      exec { yarn gulp "package-rebuild-extensions" }
+      exec { yarn gulp "vscode-win32-$(VSCODE_ARCH)-min-ci" }
+      exec { yarn gulp "vscode-win32-$(VSCODE_ARCH)-inno-updater" }
+    displayName: Build
+    env:
+      GITHUB_TOKEN: $(Github-Mixin-Password)
+      VSCODE_MIXIN_PASSWORD: $(Github-Mixin-Password)
+
+  - task: UniversalPackages@0
+    displayName: Download SAW Python package
+    inputs:
+      command: 'download'
+      downloadDirectory: '$(agent.builddirectory)\azuredatastudio-win32-x64\resources\app\ads-python'
+      feedsToUse: 'internal'
+      vstsFeed: '2191dd5f-4aec-491b-ac50-568bbc331c8a'
+      vstsFeedPackage: '2e355f03-a97e-499a-949b-f02d62b6160c'
+      vstsPackageVersion: '*'
+    condition: and(succeeded(), eq(variables['VSCODE_QUALITY'], 'saw'), ne(variables['VSCODE_ARCH'], 'arm64'))
+
+  # - powershell: | @anthonydresser unit tests timeout never existing the node process
+  #     . build/azure-pipelines/win32/exec.ps1
+  #     $ErrorActionPreference = "Stop"
+  #     exec { yarn electron x64 }
+  #     exec { .\scripts\test.bat --build --coverage --reporter mocha-junit-reporter --tfs "Unit Tests" }
+  #   displayName: Run core unit tests
+  #   condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+
+  - powershell: |
+      # Figure out the full absolute path of the product we just built
+      # including the remote server and configure the integration tests
+      # to run with these builds instead of running out of sources.
+      . build/azure-pipelines/win32/exec.ps1
+      $ErrorActionPreference = "Stop"
+      $AppRoot = "$(agent.builddirectory)\azuredatastudio-win32-x64"
+      $AppProductJson = Get-Content -Raw -Path "$AppRoot\resources\app\product.json" | ConvertFrom-Json
+      $AppNameShort = $AppProductJson.nameShort
+      # exec { $env:INTEGRATION_TEST_ELECTRON_PATH = "$AppRoot\$AppNameShort.exe"; $env:VSCODE_REMOTE_SERVER_PATH = "$(agent.builddirectory)\azuredatastudio-reh-win32-x64"; .\scripts\test-integration.bat --build --tfs "Integration Tests" }
+    displayName: Run core integration tests (x64)
+    condition: and(succeeded(), and(eq(variables['RUN_TESTS'], 'true'), ne(variables['VSCODE_ARCH'], 'arm64')))
+
+  - powershell: |
+      # Figure out the full absolute path of the product we just built
+      # including the remote server and configure the integration tests
+      # to run with these builds instead of running out of sources.
+      . build/azure-pipelines/win32/exec.ps1
+      $ErrorActionPreference = "Stop"
+      $AppRoot = "$(agent.builddirectory)\azuredatastudio-win32-arm64"
+      $AppProductJson = Get-Content -Raw -Path "$AppRoot\resources\app\product.json" | ConvertFrom-Json
+      $AppNameShort = $AppProductJson.nameShort
+      # exec { $env:INTEGRATION_TEST_ELECTRON_PATH = "$AppRoot\$AppNameShort.exe"; $env:VSCODE_REMOTE_SERVER_PATH = "$(agent.builddirectory)\azuredatastudio-reh-win32-x64"; .\scripts\test-integration.bat --build --tfs "Integration Tests" }
+    displayName: Run core integration tests (arm64)
+    condition: and(succeeded(), and(eq(variables['RUN_TESTS'], 'true'), eq(variables['VSCODE_ARCH'], 'arm64')))
+
+  - powershell: |
+      . build/azure-pipelines/win32/exec.ps1
+      $ErrorActionPreference = "Stop"
+      exec { yarn gulp "vscode-win32-$(VSCODE_ARCH)-user-setup" }
+      exec { yarn gulp "vscode-win32-$(VSCODE_ARCH)-system-setup" }
+      exec { yarn gulp "vscode-win32-$(VSCODE_ARCH)-archive" }
+    displayName: Archive & User & System setup
+    condition: succeeded()
+
+  - task: ArchiveFiles@2
+    displayName: 'Archive build scripts source'
+    inputs:
+      rootFolderOrFile: '$(Build.SourcesDirectory)/build'
+      archiveType: tar
+      archiveFile: '$(Build.BinariesDirectory)/source.tar.gz'
+
+  - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+    displayName: 'SBOM Generation Task'
+    inputs:
+      BuildDropPath: '$(Build.ArtifactStagingDirectory)'
+      PackageName: 'Azure Data Studio'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact: build scripts source'
+    inputs:
+      PathtoPublish: '$(Build.BinariesDirectory)/source.tar.gz'
+      ArtifactName: source
+
+  - powershell: |
+      . build/azure-pipelines/win32/exec.ps1
+      $ErrorActionPreference = "Stop"
+      .\build\azure-pipelines\win32\createDrop.ps1
+    displayName: Create Drop
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact: drop'
+
+  - task: PublishTestResults@2
+    displayName: 'Publish Test Results test-results.xml'
+    inputs:
+      testResultsFiles: 'test-results.xml'
+      searchFolder: '$(Build.SourcesDirectory)'
+      failTaskOnFailedTests: true
+    continueOnError: true
+    condition: and(succeededOrFailed(), eq(variables['RUN_UNSTABLE_TESTS'], 'true'))
+
+  - task: CodeQL3000Finalize@0
+    displayName: CodeQL Finalize
+    condition: eq(variables['Codeql.enabled'], 'True')
+
+  - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+    displayName: 'Component Detection'
+    inputs:
+      failOnAlert: true

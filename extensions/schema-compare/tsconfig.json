@@ -1,0 +1,24 @@
+{
+	"extends": "../tsconfig.base.json",
+	"compileOnSave": true,
+	"compilerOptions": {
+		"outDir": "./out",
+		"lib": [
+			"es6",
+			"es2015.promise"
+		],
+		"sourceMap": true,
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+		"moduleResolution": "node",
+		"declaration": false,
+		"strict": false,
+		"noImplicitAny": false,
+		"noImplicitReturns": false,
+		"noUnusedLocals": false,
+		"strictNullChecks": false
+	},
+	"exclude": [
+		"node_modules"
+	]
+}

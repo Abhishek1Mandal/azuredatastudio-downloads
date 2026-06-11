@@ -1,0 +1,18 @@
+# Lines starting with '#' are comments.
+# Each line is a file pattern followed by one or more owners.
+# Syntax can be found here: https://docs.github.com/free-pro-team@latest/github/creating-cloning-and-archiving-repositories/about-code-owners#codeowners-syntax
+
+/extensions/arc/ @swells
+/extensions/azcli/ @swells
+/extensions/azurecore/ @kburtram @aasimkhan30 @caohai @laurenastrid1 @lewis-sanchez @benjin
+/extensions/dacpac/ @kisantia
+/extensions/import @aasimkhan30
+/extensions/machine-learning @llali
+/extensions/notebook @azure-data-studio-notebook-devs
+/extensions/schema-compare/ @kisantia
+/extensions/sql-bindings/ @vasubhog @Charles-Gagnon @chlafreniere @MaddyDev
+/extensions/sql-database-projects/ @ssreerama @chlafreniere @llali @zijchen
+/extensions/sql-migration @akshika898 @JyotikaGargg @shilpimitra @Shiwani-K @radheyshah
+/extensions/mssql/config.json @kburtram
+
+/src/sql/**/notebook @azure-data-studio-notebook-devs

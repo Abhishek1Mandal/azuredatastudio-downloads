@@ -1,0 +1,230 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+'use strict';
+
+const gulp = require('gulp');
+const path = require('path');
+const fs = require('fs');
+const assert = require('assert');
+const cp = require('child_process');
+const _7z = require('7zip')['7z'];
+const util = require('./lib/util');
+const task = require('./lib/task');
+const pkg = require('../package.json');
+const product = require('../product.json');
+const vfs = require('vinyl-fs');
+const rcedit = require('rcedit');
+const mkdirp = require('mkdirp');
+
+const repoPath = path.dirname(__dirname);
+// {{SQL CARBON EDIT}}
+const buildPath = arch => path.join(path.dirname(repoPath), `azuredatastudio-win32-${arch}`);
+const zipDir = arch => path.join(repoPath, '.build', `win32-${arch}`, 'archive');
+const zipPath = arch => path.join(zipDir(arch), `azuredatastudio-win32-${arch}.zip`);
+const setupDir = (arch, target) => path.join(repoPath, '.build', `win32-${arch}`, `${target}-setup`);
+const issPath = path.join(__dirname, 'win32', 'code.iss');
+const innoSetupPath = path.join(path.dirname(path.dirname(require.resolve('innosetup'))), 'bin', 'ISCC.exe');
+const signWin32Path = path.join(repoPath, 'build', 'azure-pipelines', 'common', 'sign-win32');
+
+function packageInnoSetup(iss, options, cb) {
+	options = options || {};
+
+	const definitions = options.definitions || {};
+
+	if (process.argv.some(arg => arg === '--debug-inno')) {
+		definitions['Debug'] = 'true';
+	}
+
+	if (process.argv.some(arg => arg === '--sign')) {
+		definitions['Sign'] = 'true';
+	}
+
+	const keys = Object.keys(definitions);
+
+	keys.forEach(key => assert(typeof definitions[key] === 'string', `Missing value for '${key}' in Inno Setup package step`));
+
+	const defs = keys.map(key => `/d${key}=${definitions[key]}`);
+	const args = [
+		iss,
+		...defs,
+		`/sesrp=node ${signWin32Path} $f`
+	];
+
+	cp.spawn(innoSetupPath, args, { stdio: ['ignore', 'inherit', 'inherit'] })
+		.on('error', cb)
+		.on('exit', code => {
+			if (code === 0) {
+				cb(null);
+			} else {
+				cb(new Error(`InnoSetup returned exit code: ${code}`));
+			}
+		});
+}
+
+/**
+ * @param {string} arch
+ * @param {string} target
+ */
+function buildWin32Setup(arch, target) {
+	if (target !== 'system' && target !== 'user') {
+		throw new Error('Invalid setup target');
+	}
+
+	return cb => {
+		const ia32AppId = target === 'system' ? product.win32AppId : product.win32UserAppId;
+		const x64AppId = target === 'system' ? product.win32x64AppId : product.win32x64UserAppId;
+		const arm64AppId = target === 'system' ? product.win32arm64AppId : product.win32arm64UserAppId;
+
+		const sourcePath = buildPath(arch);
+		const outputPath = setupDir(arch, target);
+		mkdirp.sync(outputPath);
+
+		const originalProductJsonPath = path.join(sourcePath, 'resources/app/product.json');
+		const productJsonPath = path.join(outputPath, 'product.json');
+		const productJson = JSON.parse(fs.readFileSync(originalProductJsonPath, 'utf8'));
+		productJson['target'] = target;
+		fs.writeFileSync(productJsonPath, JSON.stringify(productJson, undefined, '\t'));
+
+		const quality = product.quality || 'dev';
+		const definitions = {
+			NameLong: product.nameLong,
+			NameShort: product.nameShort,
+			DirName: product.win32DirName,
+			Version: pkg.version,
+			RawVersion: pkg.version.replace(/-\w+$/, ''),
+			NameVersion: product.win32NameVersion + (target === 'user' ? ' (User)' : ''),
+			ExeBasename: product.nameShort,
+			RegValueName: product.win32RegValueName,
+			ShellNameShort: product.win32ShellNameShort,
+			AppMutex: product.win32MutexName,
+			TunnelMutex: product.win32TunnelMutex,
+			TunnelServiceMutex: product.win32TunnelServiceMutex,
+			ApplicationName: product.applicationName,
+			Arch: arch,
+			AppId: { 'ia32': ia32AppId, 'x64': x64AppId, 'arm64': arm64AppId }[arch],
+			IncompatibleTargetAppId: { 'ia32': product.win32AppId, 'x64': product.win32x64AppId, 'arm64': product.win32arm64AppId }[arch],
+			IncompatibleArchAppId: { 'ia32': x64AppId, 'x64': ia32AppId, 'arm64': ia32AppId }[arch],
+			AppUserId: product.win32AppUserModelId,
+			ArchitecturesAllowed: { 'ia32': '', 'x64': 'x64', 'arm64': 'arm64 x64' }[arch], //{{SQL CARBON EDIT}} - we still have x64 binaries in SqlToolsService, need to allow x64 binaries for arm64 arch.
+			ArchitecturesInstallIn64BitMode: { 'ia32': '', 'x64': 'x64', 'arm64': 'arm64 x64' }[arch], //{{SQL CARBON EDIT}} - same as line above.
+			SourceDir: sourcePath,
+			RepoDir: repoPath,
+			OutputDir: outputPath,
+			InstallTarget: target,
+			ProductJsonPath: productJsonPath,
+			Quality: quality
+		};
+
+		if (quality === 'insider') {
+			definitions['AppxPackage'] = `code_insiders_explorer_${arch === 'ia32' ? 'x86' : arch}.appx`;
+			definitions['AppxPackageFullname'] = `Microsoft.${product.win32RegValueName}_1.0.0.0_neutral__8wekyb3d8bbwe`;
+		}
+
+		packageInnoSetup(issPath, { definitions }, cb);
+	};
+}
+
+/**
+ * @param {string} arch
+ * @param {string} target
+ */
+function defineWin32SetupTasks(arch, target) {
+	const cleanTask = util.rimraf(setupDir(arch, target));
+	gulp.task(task.define(`vscode-win32-${arch}-${target}-setup`, task.series(cleanTask, buildWin32Setup(arch, target))));
+}
+
+defineWin32SetupTasks('ia32', 'system');
+defineWin32SetupTasks('x64', 'system');
+defineWin32SetupTasks('arm64', 'system');
+defineWin32SetupTasks('ia32', 'user');
+defineWin32SetupTasks('x64', 'user');
+defineWin32SetupTasks('arm64', 'user');
+
+/**
+ * @param {string} arch
+ */
+function archiveWin32Setup(arch) {
+	return cb => {
+		const args = ['a', '-tzip', zipPath(arch), '-x!CodeSignSummary*.md', '.', '-r'];
+
+		cp.spawn(_7z, args, { stdio: 'inherit', cwd: buildPath(arch) })
+			.on('error', cb)
+			.on('exit', () => cb(null));
+	};
+}
+
+gulp.task(task.define('vscode-win32-ia32-archive', task.series(util.rimraf(zipDir('ia32')), archiveWin32Setup('ia32'))));
+gulp.task(task.define('vscode-win32-x64-archive', task.series(util.rimraf(zipDir('x64')), archiveWin32Setup('x64'))));
+gulp.task(task.define('vscode-win32-arm64-archive', task.series(util.rimraf(zipDir('arm64')), archiveWin32Setup('arm64'))));
+
+/**
+ * @param {string} arch
+ */
+function copyInnoUpdater(arch) {
+	return () => {
+		return gulp.src('build/win32/{inno_updater.exe,vcruntime140.dll}', { base: 'build/win32' })
+			.pipe(vfs.dest(path.join(buildPath(arch), 'tools')));
+	};
+}
+
+/**
+ * @param {string} executablePath
+ */
+function updateIcon(executablePath) {
+	return cb => {
+		const icon = path.join(repoPath, 'resources', 'win32', 'code.ico');
+		rcedit(executablePath, { icon }, cb);
+	};
+}
+
+gulp.task(task.define('vscode-win32-ia32-inno-updater', task.series(copyInnoUpdater('ia32'), updateIcon(path.join(buildPath('ia32'), 'tools', 'inno_updater.exe')))));
+gulp.task(task.define('vscode-win32-x64-inno-updater', task.series(copyInnoUpdater('x64'), updateIcon(path.join(buildPath('x64'), 'tools', 'inno_updater.exe')))));
+gulp.task(task.define('vscode-win32-arm64-inno-updater', task.series(copyInnoUpdater('arm64'), updateIcon(path.join(buildPath('arm64'), 'tools', 'inno_updater.exe')))));
+
+/**
+ * Updates azuredatastudio.exe icon and metadata
+ * @param {string} arch
+ */
+function updateExeIconAndMetadata(arch) {
+	return cb => {
+		const { config } = require('./lib/electron');
+		const fancyLog = require('fancy-log');
+		const ansiColors = require('ansi-colors');
+
+		var patch = {
+			"version-string": {
+				CompanyName: config.companyName || "Microsoft",
+				FileDescription: config.productAppName || opts.productName,
+				LegalCopyright:
+					config.copyright ||
+					"Copyright (C) 2024 Microsoft, All rights reserved",
+				ProductName: config.productAppName || config.productName,
+				ProductVersion: pkg.version,
+			},
+			"file-version": pkg.version,
+			"product-version": pkg.version,
+			"icon": config.winIcon
+		};
+
+		fancyLog(ansiColors.cyan('[Updating exe icon]'), JSON.stringify(patch, null, 2));
+		fancyLog(ansiColors.yellow(`Checking if icon exists`), fs.existsSync('resources/win32/code.ico'));
+		fs.readdir(buildPath(arch), (err, files) => {
+			if (err) {
+				return cb(err);
+			}
+			files.forEach(file => {
+				if (file.startsWith('azuredatastudio') && file.endsWith('.exe')) {
+					fancyLog(ansiColors.cyan('[Patching exe]'), `Updating ${file}`);
+					rcedit(path.join(buildPath(arch), file), patch, cb);
+				}
+			});
+		});
+	};
+}
+
+gulp.task(task.define('vscode-win32-x64-exe-patcher', updateExeIconAndMetadata('x64')));
+gulp.task(task.define('vscode-win32-ia32-exe-patcher', updateExeIconAndMetadata('ia32')));
+gulp.task(task.define('vscode-win32-arm64-exe-patcher', updateExeIconAndMetadata('arm64')));

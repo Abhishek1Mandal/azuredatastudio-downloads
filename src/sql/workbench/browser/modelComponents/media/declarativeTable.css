@@ -1,0 +1,41 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.declarative-table {
+	padding: 5px 30px 0px 30px;
+	box-sizing: border-box;
+	border-collapse: collapse;
+}
+
+.declarative-table-header {
+	padding: 5px;
+	border: 1px solid;
+	vertical-align: top;
+}
+
+.declarative-table-cell {
+	padding: 5px;
+	border: 1px solid;
+}
+
+.declarative-table .declarative-table-cell .codicon.toggle-more {
+	border-width: 0px;
+	height: 16px;
+	width: 26px;
+	vertical-align: middle;
+	cursor: pointer;
+}
+
+.declarative-table .declarative-table-cell .codicon.toggle-more:focus {
+	outline-style: solid;
+}
+
+.declarative-table checkbox input[type='checkbox'] {
+	margin: 3px;
+}
+
+.declarative-table-cell-checkbox {
+	text-align: center;
+}

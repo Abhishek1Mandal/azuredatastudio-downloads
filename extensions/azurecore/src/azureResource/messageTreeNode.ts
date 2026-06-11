@@ -1,0 +1,59 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+import { TreeItem, TreeItemCollapsibleState } from 'vscode';
+import { NodeInfo } from 'azdata';
+
+import { TreeNode } from './treeNode';
+import { AzureResourceItemType } from './constants';
+
+export class AzureResourceMessageTreeNode extends TreeNode {
+	public constructor(
+		public readonly message: string,
+		parent: TreeNode | undefined
+	) {
+		super();
+
+		this.parent = parent;
+		this._id = `message_${AzureResourceMessageTreeNode._messageNum++}`;
+	}
+
+	public static create(message: string, parent: TreeNode | undefined): AzureResourceMessageTreeNode {
+		return new AzureResourceMessageTreeNode(message, parent);
+	}
+
+	public getChildren(): TreeNode[] | Promise<TreeNode[]> {
+		return [];
+	}
+
+	public getTreeItem(): TreeItem | Promise<TreeItem> {
+		let item = new TreeItem(this.message, TreeItemCollapsibleState.None);
+		item.contextValue = AzureResourceItemType.message;
+		return item;
+	}
+
+	public getNodeInfo(): NodeInfo {
+		return {
+			label: this.message,
+			isLeaf: true,
+			errorMessage: undefined,
+			metadata: undefined,
+			nodePath: this.generateNodePath(),
+			parentNodePath: this.parent?.generateNodePath() ?? '',
+			nodeStatus: undefined,
+			nodeType: AzureResourceItemType.message,
+			nodeSubType: undefined,
+			iconType: AzureResourceItemType.message
+		};
+	}
+
+	public get nodePathValue(): string {
+		return this._id;
+	}
+
+	private _id: string;
+
+	private static _messageNum: number = 0;
+}

@@ -1,0 +1,41 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+
+.vs .chevron-right.codicon,
+.hc-light .chevron-right.codicon {
+	background-image: url("chevron_right.svg");
+}
+
+.vs-dark .chevron-right.codicon,
+.hc-black .chevron-right.codicon {
+	background-image: url("chevron_right_inverse.svg");
+}
+
+breadcrumb .codicon {
+	background-size: 16px;
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	padding: 8px;
+}
+
+breadcrumb .chevron-right.codicon {
+	background-size: 16px;
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	padding: 8px;
+}
+
+breadcrumb .router-link {
+	cursor: pointer;
+}
+
+breadcrumb .breadcrumb-container {
+	display: flex;
+	flex-flow: row;
+	align-items: center;
+	margin: 10px;
+	margin-left: 19px
+}

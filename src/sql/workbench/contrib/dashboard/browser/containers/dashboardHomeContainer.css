@@ -1,0 +1,17 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+dashboard-home-tab {
+	height: 100%;
+	width: 100%;
+	display: block;
+}
+
+dashboard-home-container .properties {
+	padding-left: 10px;
+	padding-right: 10px;
+	display: block;
+	flex: 0;
+}

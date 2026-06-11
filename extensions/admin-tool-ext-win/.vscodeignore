@@ -1,0 +1,9 @@
+coverage
+out/**
+src/**
+extension.webpack.config.js
+.gitignore
+coverConfig.json
+tsconfig.json
+*.vsix
+yarn.lock

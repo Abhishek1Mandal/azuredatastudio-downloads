@@ -1,0 +1,104 @@
+{
+  "name": "agent",
+  "displayName": "SQL Server Agent",
+  "description": "Manage and troubleshoot SQL Server Agent jobs",
+  "version": "0.49.0",
+  "publisher": "Microsoft",
+  "preview": true,
+  "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
+  "icon": "images/extension.png",
+  "engines": {
+    "vscode": "^1.25.0"
+  },
+  "activationEvents": [
+    "*"
+  ],
+  "main": "./out/main",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Microsoft/azuredatastudio.git"
+  },
+  "capabilities": {
+    "virtualWorkspaces": false,
+    "untrustedWorkspaces": {
+      "supported": true
+    }
+  },
+  "extensionDependencies": [
+    "Microsoft.mssql"
+  ],
+  "contributes": {
+    "outputChannels": [
+      "sqlagent"
+    ],
+    "dashboard.tabs": [
+      {
+        "id": "data-management-agent",
+        "description": "Manage and troubleshoot SQL Agent jobs",
+        "provider": "MSSQL",
+        "title": "SQL Agent",
+        "group": "administration",
+        "when": "connectionProvider == 'MSSQL' && !mssql:iscloud && mssql:engineedition != 11 && dashboardContext == 'server'",
+        "icon": "resources/agent.svg",
+        "container": {
+          "controlhost-container": {
+            "type": "agent"
+          }
+        }
+      }
+    ],
+    "commands": [
+      {
+        "command": "agent.openNotebookDialog",
+        "title": "Schedule Notebook",
+        "icon": {
+          "dark": "resources/dark/open_notebook_inverse.svg",
+          "light": "resources/light/open_notebook.svg"
+        }
+      },
+      {
+        "command": "agent.reuploadTemplate",
+        "title": "Update Template",
+        "icon": {
+          "dark": "resources/dark/open_notebook_inverse.svg",
+          "light": "resources/light/open_notebook.svg"
+        }
+      }
+    ],
+    "menus": {
+      "notebook/toolbar": [
+        {
+          "command": "agent.openNotebookDialog",
+          "when": "false && providerId == sql && !agent:trackedTemplate"
+        },
+        {
+          "command": "agent.reuploadTemplate",
+          "when": "agent:trackedTemplate"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "agent.openNotebookDialog",
+          "when": "false && resourceExtname == .ipynb"
+        }
+      ]
+    }
+  },
+  "dependencies": {
+    "vscode-nls": "^4.1.2"
+  },
+  "devDependencies": {
+    "@types/mocha": "^7.0.2",
+    "@types/node": "^12.11.7",
+    "mocha": "^9.2.2",
+    "should": "^13.2.1",
+    "typemoq": "^2.1.0",
+    "@microsoft/vscodetestcover": "^1.2.2",
+    "@microsoft/azdata-test": "^3.0.4"
+  },
+  "__metadata": {
+    "id": "10",
+    "publisherDisplayName": "Microsoft",
+    "publisherId": "Microsoft"
+  }
+}

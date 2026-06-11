@@ -1,0 +1,56 @@
+{
+  "name": "sql-assessment",
+  "displayName": "%displayName%",
+  "description": "%description%",
+  "version": "0.6.4",
+  "publisher": "Microsoft",
+  "preview": true,
+  "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
+  "icon": "images/extension.png",
+  "aiKey": "29a207bb14f84905966a8f22524cb730-25407f35-11b6-4d4e-8114-ab9e843cb52f-7380",
+  "engines": {
+    "vscode": "^1.25.0",
+    "azdata": ">=1.27.0"
+  },
+  "activationEvents": [
+    "onDashboardOpen"
+  ],
+	"capabilities": {
+    "virtualWorkspaces": false,
+    "untrustedWorkspaces": {
+      "supported": true
+    }
+	},
+  "main": "./out/main",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Microsoft/azuredatastudio.git"
+  },
+  "extensionDependencies": [
+    "Microsoft.mssql"
+  ],
+  "contributes": {
+    "dashboard.tabs": [
+      {
+        "id": "data-management-asmt",
+        "description": "%dashboard.tabName%",
+        "provider": "MSSQL",
+        "title": "%displayName%",
+        "when": "connectionProvider == 'MSSQL' && !mssql:iscloud && mssql:engineedition != 11",
+        "container": {
+          "modelview-container": null
+        }
+      }
+    ]
+  },
+  "dependencies": {
+    "vscode-nls": "^4.1.2",
+    "@microsoft/ads-extension-telemetry": "^3.0.1",
+    "vscode-languageclient": "^5.3.0-next.1"
+  },
+  "__metadata": {
+    "id": "67",
+    "publisherDisplayName": "Microsoft",
+    "publisherId": "Microsoft"
+  }
+}

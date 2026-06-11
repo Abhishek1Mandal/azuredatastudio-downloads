@@ -1,0 +1,109 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.selected-account-container,
+.selected-tenant-container {
+	padding: 6px;
+	display: flex;
+	align-items: flex-start;
+	width: 100%;
+}
+
+.account-picker .monaco-dropdown,
+.tenant-picker .monaco-dropdown {
+	width: 100%;
+	display: flex;
+	align-items: flex-start;
+	cursor: pointer;
+}
+
+.selected-account-container .codicon {
+	flex: 0 0 25px;
+	height: 25px;
+	width: 25px;
+}
+
+.selected-account-container .label,
+.selected-tenant-container .label {
+	flex: 1 1 auto;
+	padding-left: 10px;
+	align-self: center;
+}
+
+.selected-account-container .codicon {
+	background-size: 25px;
+}
+
+.selected-account-container .codicon .badge {
+	position: relative;
+	top: 15px;
+	left: 15px;
+	overflow: hidden;
+	width: 12px;
+	height: 12px;
+}
+
+.selected-account-container .codicon .badge .badge-content {
+	width: 12px;
+	height: 12px;
+	background-size: 12px;
+}
+
+/* A container when the account list is empty */
+.no-account-container {
+	padding: 6px;
+	opacity: 0.7;
+	font-style: italic;
+}
+
+/* Account list */
+.account-list-container .list-row, .tenant-list-container .list-row {
+	padding: 6px;
+}
+
+.account-list-container .list-row .codicon {
+	flex: 0 0 32px;
+	height: 32px;
+	width: 32px;
+	background-size: 32px;
+}
+
+.account-list-container .list-row .codicon .badge {
+	position: relative;
+	top: 22px;
+	left: 22px;
+	overflow: hidden;
+	width: 15px;
+	height: 15px;
+}
+
+.account-list-container .list-row .codicon .badge .badge-content {
+	width: 15px;
+	height: 15px;
+	background-size: 15px;
+}
+
+/* Refresh link */
+.refresh-container {
+	padding-left: 15px;
+	padding-top: 6px;
+	display: flex;
+	align-items: flex-start;
+}
+
+.refresh-container .monaco-action-bar .actions-container {
+	justify-content: flex-start;
+}
+
+.refresh-container .codicon {
+	flex: 0 0 16px;
+	height: 16px;
+	width: 16px;
+}
+
+.refresh-container .monaco-action-bar {
+	flex: 1 1 auto;
+	margin-left: 10px;
+}

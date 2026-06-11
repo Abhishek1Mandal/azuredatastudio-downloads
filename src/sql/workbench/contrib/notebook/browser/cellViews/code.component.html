@@ -1,0 +1,25 @@
+<!--
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+-->
+<div style="width: 100%; height: 100%; display: flex; flex-flow: row" (mouseover)="hover=true" (mouseleave)="hover=false">
+	<div #toolbar class="toolbar"></div>
+	<div style="flex: 1 1 auto; flex-flow: column; overflow: hidden;">
+		<div style="display: flex; flex-flow: row">
+			<div style="flex: 1 1 auto; overflow: hidden;">
+				<div #editor class="editor"></div>
+			</div>
+		</div>
+		<div style="display: flex; flex-flow: row; justify-content: flex-end;">
+			<collapse-component *ngIf="cellModel.cellType === 'code' && cellModel.source && cellModel.source.length > 1" [cellModel]="cellModel" [activeCellId]="activeCellId"></collapse-component>
+			<button #cellLanguage title="{{cellLanguageTitle}}" class="cellLanguage" *ngIf="cellModel.cellType === 'code' && cellModel.language" (click)="onCellLanguageClick()" (focus)="onCellLanguageFocus()">
+				{{cellModel.displayLanguage}}
+			</button>
+		</div>
+		<div #parameter class="parameter" *ngIf="cellModel.cellType === 'code' && cellModel.isParameter">
+			<span>{{parametersText}}</span>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,7 @@
+src/**
+out/**
+.gitignore
+tsconfig.json
+extension.webpack.config.js
+*.vsix
+yarn.lock

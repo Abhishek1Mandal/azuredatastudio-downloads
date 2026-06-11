@@ -1,0 +1,354 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.modal {
+	background-color: rgba(204, 204, 204, 0.6);
+	right: 0;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	position: absolute;
+	z-index: 500;
+}
+
+.modal .btn-secondary {
+	border-style: solid;
+	border-width: 1px;
+}
+
+.modal.normal-dialog .modal-dialog {
+	margin: auto;
+	width: 640px;
+}
+
+.modal.normal-dialog .modal-dialog .modal-content {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+
+.modal.normal-dialog .modal-dialog .modal-content .modal-body {
+	flex: 1 1 auto;
+	overflow-y: auto;
+}
+.modal .modal-header {
+	padding: 15px;
+}
+
+.modal .codicon.in-progress {
+	width: 25px;
+	height: 25px;
+}
+
+/** FLYOUT **/
+.modal.flyout-dialog .modal-dialog .modal-dialog-container {
+	display: contents;
+	overflow-x: auto;
+}
+
+.modal.flyout-dialog .modal-dialog {
+	margin: auto 0 auto auto;
+	height: 100%;
+	max-width: 100%;
+	right: 0;
+	position: absolute;
+	overflow-y: hidden;
+}
+
+.modal.flyout-dialog .modal-dialog.narrow-dialog {
+	width: 500px;
+}
+
+.modal.flyout-dialog .modal-dialog.medium-dialog {
+	width: 800px;
+}
+
+.modal.flyout-dialog .modal-dialog.wide-dialog {
+	width: 1200px;
+	max-width: 95%;
+	min-width: 400px;
+}
+
+.modal.flyout-dialog .modal-content {
+	height: 100%;
+	font-size: 11px;
+	display: flex;
+	flex-direction: column;
+}
+
+.modal .modal-title {
+	font-size: 15px;
+	font-weight: 600;
+	margin-block-start: 0px;
+	margin-block-end: 0px;
+}
+
+.modal .modal-title-icon {
+	width: 20px;
+	height: 20px;
+	float: left;
+	margin-right: 10px;
+}
+
+.modal.flyout-dialog .modal-body,
+.modal.flyout-dialog .angular-modal-body,
+/* Style for body and footer in modal dialog. This should be applied to dialog created with angular component. */
+.modal.flyout-dialog .modal-body-and-footer {
+	flex: 1 1;
+	overflow: hidden;
+}
+
+/* modl body content style(excluding dialogErrorMessage section) for angulr component dialog */
+.angular-modal-body-content {
+	overflow-x: hidden;
+	overflow-y: auto;
+	padding: 15px;
+}
+
+.modal.flyout-dialog .angular-form {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+.modal.flyout-dialog .dialog-label {
+	width: 100%;
+	padding-bottom: 5px;
+}
+
+/* Add space in the bottom to separate each input elements */
+.modal.flyout-dialog .input-divider {
+	width: 100%;
+	margin-bottom: 20px;
+}
+
+.modal.flyout-dialog .input {
+	width: 100%;
+	border: none;
+	height: 25px;
+	padding-left: 4px;
+}
+
+.modal .select-box,
+.modal .monaco-select-box {
+	width: 100%;
+	height: 25px;
+	font-size: 11px;
+	border: 1px solid transparent;
+}
+
+.modal .modal-footer {
+	display: flex;
+	padding: 15px;
+}
+
+.modal .modal-footer .left-footer {
+	display: flex;
+	flex: 1 1 auto;
+	justify-content: flex-start;
+}
+
+.modal .modal-footer .right-footer {
+	display: flex;
+	flex: 1 1 auto;
+	justify-content: flex-end;
+}
+
+.modal .footer-button a.monaco-button.monaco-text-button {
+	border-radius: 2px;
+	height: 24px;
+	padding-left: 20px;
+	padding-right: 20px;
+	min-width: 80px;
+}
+
+.vs .monaco-text-button:focus {
+	outline-width: 1px;
+}
+
+.modal .footer-button {
+	margin-left: 8px;
+}
+
+.modal .right-footer .footer-button:last-of-type {
+	margin-right: none;
+}
+
+.modal.flyout-dialog .dialog-message {
+	padding: 6px 10px 10px 10px;
+	font-size: 13px;
+	display: flex;
+	flex-direction: column;
+}
+
+.vs .modal.flyout-dialog .dialog-message.error,
+.vs-dark .modal.flyout-dialog .dialog-message.error {
+	background-color: #B62E00 !important;
+	color: #FFFFFF !important;
+}
+
+.vs .modal.flyout-dialog .dialog-message.warning,
+.vs-dark .modal.flyout-dialog .dialog-message.warning {
+	background-color: #F9E385 !important;
+	color: #4A4A4A !important;
+}
+
+.vs .modal.flyout-dialog .dialog-message.info,
+.vs-dark .modal.flyout-dialog .dialog-message.info {
+	background-color: #096CC9 !important;
+	color: #FFFFFF !important;
+}
+
+.modal.flyout-dialog .dialog-message-header {
+	overflow: hidden;
+	display: flex;
+	flex-direction: row;
+}
+
+.modal.flyout-dialog .dialog-message-body {
+	margin-left: 26px;
+	overflow-y: scroll;
+	overflow-x: hidden;
+	max-height: 90px;
+	display: flex;
+	flex-direction: column;
+}
+
+.modal.flyout-dialog .dialog-message-icon {
+	margin-right: 10px;
+	margin-top: 5px;
+	width: 16px;
+	height: 16px;
+	min-width: 16px;
+}
+
+.modal.flyout-dialog .dialog-message-severity {
+	margin-right: auto;
+	line-height: 26px;
+}
+
+.modal.flyout-dialog .dialog-message-button {
+	min-width: 60px;
+	margin: 3px 10px 3px 3px;
+}
+
+.modal.flyout-dialog .dialog-message.info .dialog-message-button>a:focus,
+.modal.flyout-dialog .dialog-message.error .dialog-message-button>a:focus {
+	outline-color: #FFFFFF;
+}
+
+.modal.flyout-dialog .dialog-message.warning .dialog-message-button>a:focus {
+	outline-color: #000000;
+}
+
+.modal.flyout-dialog .dialog-message-button>a {
+	background-position-x: 2px !important;
+	background-color: inherit !important;
+	color: inherit !important;
+	padding-left: 22px !important;
+	background-size: 16px 16px !important;
+	text-align: left !important;
+}
+
+.modal.flyout-dialog .dialog-message-summary {
+	overflow-x: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.modal.flyout-dialog .dialog-message-summary.expanded {
+	white-space: normal;
+	overflow-x: unset;
+}
+
+.modal.flyout-dialog .dialog-message-detail {
+	margin-top: 5px;
+	white-space: pre-wrap;
+	user-select: text;
+	font-size: 11px;
+}
+
+.hc-black .dialog-message.warning .close-message-icon,
+.close-message-icon {
+	background: url('close_inverse.svg') center center no-repeat;
+}
+
+.dialog-message.warning .close-message-icon {
+	background: url('close.svg') center center no-repeat;
+}
+
+.hc-black .dialog-message.warning .copy-message-icon,
+.copy-message-icon {
+	background: url('copy_inverse.svg') center center no-repeat;
+}
+
+.dialog-message.warning .copy-message-icon {
+	background: url('copy.svg') center center no-repeat;
+}
+
+.hc-black .dialog-message.warning .message-details-icon,
+.message-details-icon {
+	background: url('show_details_inverse.svg') center center no-repeat;
+}
+
+.dialog-message.warning .message-details-icon {
+	background: url('show_details.svg') center center no-repeat;
+}
+
+.dialog-message.info .dialog-message-icon {
+	background: url('info_notification_inverse.svg') center center no-repeat;
+}
+
+.hc-black .dialog-message.warning .dialog-message-icon {
+	background: url('warning_notification_inverse.svg') center center no-repeat;
+}
+
+.dialog-message.warning .dialog-message-icon {
+	background: url('warning_notification.svg') center center no-repeat;
+}
+
+.dialog-message.error .dialog-message-icon {
+	background: url('error_notification_inverse.svg') center center no-repeat;
+}
+
+.hc-light .dialog-message.info .dialog-message-icon {
+	background: url('info_notification.svg') center center no-repeat !important;
+}
+
+.hc-light .dialog-message.error .dialog-message-icon {
+	background: url('error_notification.svg') center center no-repeat !important;
+}
+
+.hc-light .dialog-message.warning .dialog-message-icon {
+	background: url('warning_notification.svg') center center no-repeat !important;
+}
+
+.hc-light .copy-message-icon {
+	background: url('copy.svg') center center no-repeat !important;
+}
+
+.hc-light .close-message-icon {
+	background: url('close.svg') center center no-repeat !important;
+}
+
+.codicon.masked-icon.browse-local {
+	display: inline-block;
+	height: 25px;
+	width: 25px;
+}
+
+.codicon.masked-icon.browse-local:before {
+	height: 25px;
+	width: 25px;
+	background-image: none;
+	-webkit-mask-image: url('browse-local.svg');
+	mask-image: url('browse-local.svg');
+	-webkit-mask-size: 100%;
+	mask-size: 100%;
+}
+
+.modal-dialog form {
+	height: 100%;
+}

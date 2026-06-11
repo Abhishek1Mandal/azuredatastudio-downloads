@@ -1,0 +1,160 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vs .monaco-toolbar .action-label.toolbar-toggle-more,
+.hc-light .monaco-toolbar .action-label.toolbar-toggle-more {
+	background-image: url('ellipsis.svg');
+}
+
+.hc-black .monaco-toolbar .action-label.toolbar-toggle-more,
+.vs-dark .monaco-toolbar .action-label.toolbar-toggle-more {
+	background-image: url('ellipsis-inverse.svg');
+}
+
+.vs .codicon.start,
+.hc-light .codicon.start,
+.vs-dark .codicon.start,
+.hc-black .codicon.start {
+	background-image: url('start.svg');
+}
+
+.vs .codicon.add,
+.hc-light .codicon.add,
+.vs-dark .codicon.add,
+.hc-black .codicon.add {
+	background-image: url('add.svg');
+}
+
+.vs .codicon.stop,
+.hc-light .codicon.stop,
+.vs-dark .codicon.stop,
+.hc-black .codicon.stop {
+	background-image: url('stop.svg');
+}
+
+.vs .codicon.disconnect,
+.hc-light .codicon.disconnect {
+	background-image: url('disconnect.svg');
+}
+
+.vs-dark .codicon.disconnect,
+.hc-black .codicon.disconnect {
+	background-image: url('disconnect_inverse.svg');
+	background-repeat: no-repeat;
+}
+
+.vs .codicon.connect,
+.hc-light .codicon.connect {
+	background-image: url('connect.svg');
+}
+
+.vs-dark .codicon.connect,
+.hc-black .codicon.connect {
+	background-image: url('connect_inverse.svg');
+	background-repeat: no-repeat;
+}
+
+.vs .codicon.changeConnection,
+.hc-light .codicon.changeConnection {
+	background-image: url('change_connection.svg');
+}
+
+.vs-dark .codicon.changeConnection,
+.hc-black .codicon.changeConnection  {
+	background-image: url('change_connection_inverse.svg');
+	background-repeat: no-repeat;
+}
+
+.vs .codicon.estimatedQueryPlan,
+.hc-light .codicon.estimatedQueryPlan,
+.vs .codicon.actualQueryPlan,
+.hc-light .codicon.actualQueryPlan {
+	background-image: url('query-plan.svg');
+}
+
+.vs .codicon.disabledActualExecutionPlan,
+.hc-light .codicon.disabledActualExecutionPlan {
+	background-image: url('disabled-actual-execution-plan.svg');
+}
+
+.vs .codicon.enabledActualExecutionPlan,
+.hc-light .codicon.enabledActualExecutionPlan {
+	background-image: url('enabled-actual-execution-plan.svg');
+}
+
+.vs-dark .codicon.estimatedQueryPlan,
+.hc-black .codicon.estimatedQueryPlan,
+.vs-dark .codicon.actualQueryPlan,
+.hc-black .codicon.actualQueryPlan {
+	background-image: url('query-plan-inverse.svg');
+}
+
+.vs-dark .codicon.codicon.disabledActualExecutionPlan,
+.hc-black .codicon.codicon.disabledActualExecutionPlan {
+	background-image: url('disabled-actual-execution-plan-inverse.svg');
+}
+
+.vs-dark .codicon.codicon.enabledActualExecutionPlan,
+.hc-black .codicon.codicon.enabledActualExecutionPlan {
+	background-image: url('enabled-actual-execution-plan-inverse.svg');
+}
+
+.vs .codicon.createInsight,
+.hc-light .codicon.createInsight {
+	background-image: url('create_insight.svg');
+}
+
+.vs-dark .codicon.createInsight,
+.hc-black .codicon.createInsight {
+	background-image: url('create_insight_inverse.svg');
+}
+
+.vs .codicon.copyImage,
+.hc-light .codicon.copyImage {
+	background-image: url('copy_image.svg');
+}
+
+.vs-dark .codicon.copyImage,
+.hc-black .codicon.copyImage {
+	background-image: url('copy_image_inverse.svg');
+}
+
+.vs .codicon.saveAsImage,
+.hc-light .codicon.saveAsImage {
+	background-image: url('save_as_image.svg');
+}
+
+.vs-dark .codicon.saveAsImage,
+.hc-black .codicon.saveAsImage {
+	background-image: url('save_as_image_inverse.svg');
+}
+
+.vs .codicon.enablesqlcmd,
+.hc-light .codicon.enablesqlcmd {
+	background-image: url('enable_sqlcmd.svg');
+}
+
+.vs-dark .codicon.enablesqlcmd,
+.hc-black .codicon.enablesqlcmd {
+	background-image: url('enable_sqlcmd_inverse.svg');
+	background-repeat: no-repeat;
+}
+
+.vs .codicon.disablesqlcmd,
+.hc-light .codicon.disablesqlcmd {
+	background-image: url('disable_sqlcmd.svg');
+}
+
+.vs-dark .codicon.disablesqlcmd,
+.hc-black .codicon.disablesqlcmd {
+	background-image: url('disable_sqlcmd_inverse.svg');
+	background-repeat: no-repeat;
+}
+
+.carbon-taskbar .codicon.export {
+	background-origin: initial !important;
+	background-position: left !important;
+	background-size: 11px !important;
+}

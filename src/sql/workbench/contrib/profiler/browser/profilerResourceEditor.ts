@@ -1,0 +1,103 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+import { IEditorOptions } from 'vs/editor/common/config/editorOptions';
+import * as nls from 'vs/nls';
+import * as DOM from 'vs/base/browser/dom';
+import { TextResourceEditorModel } from 'vs/workbench/common/editor/textResourceEditorModel';
+import * as editorCommon from 'vs/editor/common/editorCommon';
+
+import { AbstractTextCodeEditor } from 'vs/workbench/browser/parts/editor/textCodeEditor';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { IStorageService } from 'vs/platform/storage/common/storage';
+import { IEditorOpenContext } from 'vs/workbench/common/editor';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { CancellationToken } from 'vs/base/common/cancellation';
+import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
+import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
+import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
+import { ITextEditorOptions } from 'vs/platform/editor/common/editor';
+import { EditorInput } from 'vs/workbench/common/editor/editorInput';
+import { ITextResourceConfigurationService } from 'vs/editor/common/services/textResourceConfiguration';
+import { IFileService } from 'vs/platform/files/common/files';
+
+class ProfilerResourceCodeEditor extends CodeEditorWidget {
+
+	// protected _getContributions(): IEditorContributionCtor[] {
+	// 	let contributions = super._getContributions();
+	// 	let skipContributions = [FoldingController.prototype];
+	// 	contributions = contributions.filter(c => skipContributions.indexOf(c.prototype) === -1);
+	// 	return contributions;
+	// }
+
+}
+
+/**
+ * Extension of TextResourceEditor that is always readonly rather than only with non UntitledInputs
+ */
+export class ProfilerResourceEditor extends AbstractTextCodeEditor<editorCommon.ICodeEditorViewState> {
+
+	public static ID = 'profiler.editors.textEditor';
+	constructor(
+		@ITelemetryService telemetryService: ITelemetryService,
+		@IInstantiationService instantiationService: IInstantiationService,
+		@IStorageService storageService: IStorageService,
+		@ITextResourceConfigurationService configurationService: ITextResourceConfigurationService,
+		@IThemeService themeService: IThemeService,
+		@IEditorService editorService: IEditorService,
+		@IEditorGroupsService editorGroupService: IEditorGroupsService,
+		@IFileService fileService: IFileService
+	) {
+		super(ProfilerResourceEditor.ID, telemetryService, instantiationService, storageService, configurationService, themeService, editorService, editorGroupService, fileService);
+	}
+
+	protected override createEditorControl(parent: HTMLElement, configuration: IEditorOptions): editorCommon.IEditor {
+		this.editorControl = this.instantiationService.createInstance(ProfilerResourceCodeEditor, parent, configuration, {});
+
+		return this.editorControl;
+	}
+
+	protected override getConfigurationOverrides(): IEditorOptions {
+		const options = super.getConfigurationOverrides();
+		options.readOnly = true;
+		if (this.input) {
+			options.inDiffEditor = false;
+			options.scrollBeyondLastLine = false;
+			options.folding = false;
+			options.renderWhitespace = 'none';
+			options.wordWrap = 'on';
+			options.guides = {
+				indentation: false
+			};
+			options.rulers = [];
+			options.glyphMargin = true;
+			options.minimap = {
+				enabled: false
+			};
+		}
+		return options;
+	}
+
+	override async setInput(input: UntitledTextEditorInput, options: ITextEditorOptions, context: IEditorOpenContext): Promise<void> {
+		await super.setInput(input, options, context, CancellationToken.None);
+		const editorModel = await this.input.resolve() as TextResourceEditorModel;
+		await editorModel.resolve();
+		this.getControl().setModel(editorModel.textEditorModel);
+	}
+
+	protected getAriaLabel(): string {
+		return nls.localize('profilerTextEditorAriaLabel', "Profiler editor for event text. Readonly");
+	}
+
+	public override layout(dimension: DOM.Dimension) {
+		this.getControl().layout(dimension);
+	}
+
+	protected tracksEditorViewState(input: EditorInput): boolean {
+		return input.typeId === ProfilerResourceEditor.ID;
+	}
+}

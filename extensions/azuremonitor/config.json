@@ -1,0 +1,22 @@
+{
+	"downloadUrl": "https://github.com/Microsoft/sqltoolsservice/releases/download/v{#version#}/microsoft.sqltools.servicelayer-{#fileName#}",
+	"version": "3.0.0-release.133",
+	"downloadFileNames": {
+		"Windows_86": "win-x86-net5.0.zip",
+		"Windows": "win-x64-net5.0.zip",
+		"OSX": "osx-x64-net5.0.tar.gz",
+		"Linux": "rhel-x64-net5.0.tar.gz"
+	},
+	"installDirectory": "../sqltoolsservice/{#platform#}/{#version#}",
+	"executableFiles": [
+		"MicrosoftKustoServiceLayer.exe",
+		"MicrosoftKustoServiceLayer"
+	],
+	"retry": {
+		"retries": 15,
+		"factor": 2,
+		"minTimeout": 1000,
+		"maxTimeout": 300000,
+		"randomize": false
+	}
+}

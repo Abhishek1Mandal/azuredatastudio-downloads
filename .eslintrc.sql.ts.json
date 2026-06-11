@@ -1,0 +1,22 @@
+{
+	"parser": "@typescript-eslint/parser",
+	"parserOptions": {
+		"ecmaVersion": 6,
+		"sourceType": "module",
+		"project": "./tsconfig.sql.json"
+	},
+	"plugins": [
+		"@typescript-eslint",
+		"jsdoc"
+	],
+	"rules": {
+		"no-cond-assign": 2,
+		"@typescript-eslint/no-floating-promises": [
+			"error",
+			{
+				"ignoreVoid": true
+			}
+		],
+		"jsdoc/check-param-names": "error"
+	}
+}

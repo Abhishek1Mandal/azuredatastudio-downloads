@@ -1,0 +1,197 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.connection-label {
+	width: 80px;
+	padding-bottom: 5px;
+}
+
+.connection-input {
+	width: 200px;
+	padding-bottom: 5px;
+}
+
+.connection-dialog {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	overflow-x: hidden;
+	overflow-y: auto;
+}
+
+.connection-dialog .tabbedPanel {
+	border-top-color: transparent;
+	flex: 1 1;
+	min-height: 120px;
+	overflow: hidden;
+}
+
+.connection-dialog .tab-container {
+	overflow: hidden;
+	flex: 1 1;
+	display: flex;
+	flex-direction: column;
+}
+
+.connection-history-label {
+	font-size: 15px;
+	display: inline;
+	text-align: left;
+}
+
+.recent-titles-container {
+	display: flex;
+	justify-content: space-between;
+	margin: 5px;
+	flex: 0 0 auto;
+}
+
+.connection-provider-info {
+	margin: 0 13px;
+}
+
+.connection-recent-content {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+.connection-recent-content .server-explorer-viewlet {
+	flex: 1 1;
+}
+
+.connection-table-content {
+	width:100%;
+	table-layout: fixed;
+}
+
+.connection-type {
+	flex: 0 0 auto;
+	overflow: hidden;
+	margin: 0px 13px;
+}
+
+.connection-recent-tab {
+	height: 100%;
+}
+
+.connection-recent {
+	height: 100%;
+}
+
+.vs-dark .connection-dialog .connection-history-actions .action-label.codicon,
+.hc-black .connection-dialog .connection-history-actions .action-label.codicon,
+.hc-light .connection-dialog .connection-history-actions .action-label.codicon,
+.connection-dialog .connection-history-actions .action-label.codicon {
+	display: block;
+	height: 20px;
+	line-height: 20px;
+	min-width: 20px;
+	background-size: 16px;
+	background-position: 2px center;
+	background-repeat: no-repeat;
+	padding-left: 25px;
+	width: auto;
+}
+
+.search-action.clear-search-results,
+.hc-light .search-action.clear-search-results {
+	background: url('clear-search-results.svg');
+}
+
+.vs-dark .search-action.clear-search-results,
+.hc-black .search-action.clear-search-results {
+	background: url('clear-search-results-dark.svg');
+}
+
+.connection-details-title {
+	font-size: 14px;
+	margin: 5px 0px;
+	padding: 5px 15px;
+	font-weight: 600;
+}
+
+.custom-connection-options .connection-label .dialog-label-container,
+.hc-light .custom-connection-options .connection-label .dialog-label-container,
+.vs-dark .custom-connection-options .connection-label .dialog-label-container,
+.hc-black .custom-connection-options .connection-label .dialog-label-container {
+	background-size: 9px;
+	background-repeat: no-repeat;
+	background-position: right;
+	padding-right: 18px;
+	float: left;
+}
+
+.dialog-label-container.info-icon,
+.vs .dialog-label-container.info-icon,
+.hc-light .dialog-label-container.info-icon {
+	background-image: url("info.svg");
+}
+
+.vs-dark .dialog-label-container.info-icon,
+.hc-black .dialog-label-container.info-icon {
+	background-image: url("info_inverse.svg");
+}
+
+.hide-azure-accounts .azure-account-row {
+	display: none;
+}
+
+.hide-username .username-row {
+	display: none;
+}
+
+.hide-password .password-row {
+	display: none;
+}
+
+.hide-customOptions .custom-connection-options {
+	display: none;
+}
+
+.hide-refresh-link .azure-account-row.refresh-credentials-link {
+	display: none;
+}
+
+.hide-azure-tenants .azure-tenant-row {
+	display: none;
+}
+
+.connection-input .monaco-dropdown .monaco-action-bar .action-label.codicon.dropdown-arrow {
+	background-position: 50%;
+	background-size: cover;
+	display: inline-block;
+}
+
+.connection-input .monaco-inputbox .monaco-action-bar .action-item .codicon {
+	width: 8px;
+	height: 8px;
+}
+
+.connection-dialog .explorer-servers .connection-profile .monaco-tl-twistie {
+	/* Hide twisties */
+	display: none !important;
+}
+
+.connection-dialog .use-connection-string .username-row,
+.connection-dialog .use-connection-string .password-row,
+.connection-dialog .use-connection-string .server-name-row,
+.connection-dialog .use-connection-string .azure-tenant-row,
+.connection-dialog .use-connection-string .auth-type-row,
+.connection-dialog .use-connection-string .database-row,
+.connection-dialog .use-connection-string .advanced-button,
+.connection-dialog .use-connection-string .azure-account-row,
+.connection-dialog .connection-string-row {
+	display: none;
+}
+
+.use-connection-string .connection-string-row {
+	display: table-row;
+}
+
+.connection-dialog .connection-input-options .connection-input label {
+	margin-right: 10px;
+}
+
